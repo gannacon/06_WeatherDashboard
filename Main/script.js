@@ -1,91 +1,69 @@
-$(document).ready(function() {
+var userFormEl = document.getElementById('city-form');
+var cityInputEl = document.getElementById('city-input');
+var historyContainer = document.getElementById('cities-buttons');
+  //blank array for the cities
+  var cities = [];
 
-  var animals = [
-    "dog", "cat", "rabbit", "hamster", "skunk", "goldfish",
-    "bird", "ferret", "turtle", "sugar glider", "chinchilla",
-    "hedgehog", "hermit crab", "gerbil", "pygmy goat", "chicken",
-    "capybara", "teacup pig", "serval", "salamander", "frog"
-  ];
+  //------------------------------------------------------------------------------------------------------------------------
+  /* FORM SUBMIT HANDLER. ON SUBMIT BUTTON CLICK IT WILL TAKE THE USERS INPUT AND IF
+  IT IS VALID IT WILL PUSH INTO THE GETLONGANDLAT FUNCTION
+  */
+var formSubmitHandler = function(event) {
+  event.preventDefault();
 
-  // function to make buttons and add to page
-  function populateButtons(arrayToUse, classToAdd, areaToAddTo) {
-    $(areaToAddTo).empty();
+  var city = cityInputEl.value.trim();
 
-    for (var i = 0; i < arrayToUse.length; i++) {
-      var a = $("<button>");
-      a.addClass(classToAdd);
-      a.attr("data-type", arrayToUse[i]);
-      a.text(arrayToUse[i]);
-      $(areaToAddTo).append(a);
-    }
+  if (city) {
+    getLongAndLat(city); 
+  } 
+}
 
-  }
+  //------------------------------------------------------------------------------------------------------------------------
+  /* FUNCTION RUNS AFTER THE SUBMIT BUTTON IS CLICKED. READS THE USER INPUT AND PLACES IT INOT THE API.
+  */
+  function getLongAndLat(userCityInput){
+    var LLApi = "http://api.openweathermap.org/geo/1.0/direct?q=" + userCityInput + "&limit=1&appid=a873b655819c186e5b36d85b35271417"
 
-  $(document).on("click", ".animal-button", function() {
-    $("#animals").empty();
-    $(".animal-button").removeClass("active");
-    $(this).addClass("active");
-
-    var type = $(this).attr("data-type");
-    var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + type + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
-
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    })
-      .then(function(response) {
-        var results = response.data;
-
-        for (var i = 0; i < results.length; i++) {
-          var animalDiv = $("<div class=\"animal-item\">");
-
-          var rating = results[i].rating;
-
-          var p = $("<p>").text("Rating: " + rating);
-
-          var animated = results[i].images.fixed_height.url;
-          var still = results[i].images.fixed_height_still.url;
-
-          var animalImage = $("<img>");
-          animalImage.attr("src", still);
-          animalImage.attr("data-still", still);
-          animalImage.attr("data-animate", animated);
-          animalImage.attr("data-state", "still");
-          animalImage.addClass("animal-image");
-
-          animalDiv.append(p);
-          animalDiv.append(animalImage);
-
-          $("#animals").append(animalDiv);
-        }
+    fetch(LLApi)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        console.log(data);
+        var lat = data[0].lat;
+        console.log(lat);
+        var lon = data[0].lon;
+        console.log(lon);
+        searchCities(lat, lon)
       });
-  });
+    };
 
-  $(document).on("click", ".animal-image", function() {
+  //------------------------------------------------------------------------------------------------------------------------
+  // FUNCTION TO SEARCH FOR CITIES FROM LONG AT LAT INPUT
+  function searchCities(lat, lon){
+    fetch("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat+ "&lon=" + lon + "&exclude=hourly,daily&appid=a873b655819c186e5b36d85b35271417")
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function(data) {
+        console.log(data);
+        var HisBtn = document.createElement('button')
+        HisBtn.textContent = data.timezone;
+        historyContainer.append(HisBtn);
 
-    var state = $(this).attr("data-state");
+      });
+    };
 
-    if (state === "still") {
-      $(this).attr("src", $(this).attr("data-animate"));
-      $(this).attr("data-state", "animate");
-    }
-    else {
-      $(this).attr("src", $(this).attr("data-still"));
-      $(this).attr("data-state", "still");
-    }
-  });
+  //------------------------------------------------------------------------------------------------------------------------
+  // READING THE CLICK OF THE BUTTON
 
-  $("#add-animal").on("click", function(event) {
-    event.preventDefault();
-    var newAnimal = $("input").eq(0).val();
 
-    if (newAnimal.length > 2) {
-      animals.push(newAnimal);
-    }
 
-    populateButtons(animals, "animal-button", "#animal-buttons");
 
-  });
+  // BY CLICKING THE SUBMIT BUTTON IT WILL RUN THE GET LONG AND LAT BUTTON
+  userFormEl.addEventListener('submit', formSubmitHandler);
 
-  populateButtons(animals, "animal-button", "#animal-buttons");
-});
+
+
+// searchCities();
+ 
