@@ -1,8 +1,9 @@
 var userFormEl = document.getElementById('city-form');
 var cityInputEl = document.getElementById('city-input');
 var historyContainer = document.getElementById('cities-buttons');
-  //blank array for the cities
-  var cities = [];
+var weatherInformation = document.getElementById('weatherData');
+  //blank array for the cities history
+  var citiesHistory = [];
 
   //------------------------------------------------------------------------------------------------------------------------
   /* FORM SUBMIT HANDLER. ON SUBMIT BUTTON CLICK IT WILL TAKE THE USERS INPUT AND IF
@@ -34,25 +35,48 @@ var formSubmitHandler = function(event) {
         console.log(lat);
         var lon = data[0].lon;
         console.log(lon);
-        searchCities(lat, lon)
+        searchCities(lat, lon);
+        console.log(data[0].name);
+        var cityName = document.createElement('h1')
+        var name = document.createTextNode(data[0].name);
+        cityName.appendChild(name);
+        weatherInformation.appendChild(cityName);
       });
     };
 
   //------------------------------------------------------------------------------------------------------------------------
   // FUNCTION TO SEARCH FOR CITIES FROM LONG AT LAT INPUT
   function searchCities(lat, lon){
-    fetch("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat+ "&lon=" + lon + "&exclude=hourly,daily&appid=a873b655819c186e5b36d85b35271417")
+    fetch("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat+ "&lon=" + lon + "&exclude=&appid=a873b655819c186e5b36d85b35271417")
       .then(function (response) {
         return response.json();
       })
       .then(function(data) {
         console.log(data);
-        var HisBtn = document.createElement('button')
+        HisBtn = document.createElement('button')
         HisBtn.textContent = data.timezone;
+        citiesHistory.push(data.timezone);
         historyContainer.append(HisBtn);
 
+        renderWeatherData(data);
       });
     };
+
+  //------------------------------------------------------------------------------------------------------------------------
+  // RENDERING THE WEATHER DATA
+
+  function renderWeatherData(data){
+
+    var now = dayjs();
+    $('#today').text(now.format('MMM D, YYYY'));
+    console.log(data.current.temp);
+    var currentTemp = document.createElement('h2')
+    var temp = document.createTextNode("Current Temperature: " + data.current.temp);
+    currentTemp.appendChild(temp);
+    weatherInformation.appendChild(currentTemp);
+    // var date = document.createTextNode(currentDate)
+    // holidayContainer.appendChild(date);
+  };
 
   //------------------------------------------------------------------------------------------------------------------------
   // READING THE CLICK OF THE BUTTON
@@ -65,5 +89,5 @@ var formSubmitHandler = function(event) {
 
 
 
-// searchCities();
+
  
