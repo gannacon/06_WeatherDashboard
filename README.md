@@ -31,6 +31,10 @@ WHEN I click on a city in the search history
 THEN I am again presented with current and future conditions for that city
 ```
 
+## Webpage of work
+
+https://gannacon.github.io/06_WeatherDashboard/
+
 ## Mock-Up
 
- ![screenshot of my work](./images/screenshot.png)
+ ![screenshot of my work](./images/ScreenShot.png)
