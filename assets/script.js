@@ -23,7 +23,7 @@ var formSubmitHandler = function(event) {
   /* FUNCTION RUNS AFTER THE SUBMIT BUTTON IS CLICKED. READS THE USER INPUT AND PLACES IT INOT THE API.
   */
   function getLongAndLat(userCityInput){
-    var LLApi = "http://api.openweathermap.org/geo/1.0/direct?q=" + userCityInput + "&limit=1&appid=a873b655819c186e5b36d85b35271417"
+    var LLApi = "https://api.openweathermap.org/geo/1.0/direct?q=" + userCityInput + "&limit=1&appid=a873b655819c186e5b36d85b35271417"
 
     fetch(LLApi)
       .then(function (response) {
